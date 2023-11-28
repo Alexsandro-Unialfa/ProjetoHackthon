@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ProjetoHackthon</string>
+    <string name="entrar">Entrar</string>
+    <string name="rota">Horarios e Rotas</string>
+    <string name="passagem">Passagem</string>
+    <string name="sair">Sair</string>
+    <string name="voltar">Voltar</string>
+    <string name="lembra_senha">Lembrar Senha</string>
+    <string name="catraca">Liberar Catraca</string>
+    <string name="text_cadastro">Crie sua conta clicando aqui!</string>
+</resources>
