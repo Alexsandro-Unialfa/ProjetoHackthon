@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,15 +15,15 @@ public class DetalhesActivity extends AppCompatActivity {
     Button btnVolta;
     Button btnsair;
     TextView transportadora, descricao, partida, destino, saida, chegada;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes);
-        
 
         btnVolta = findViewById(R.id.btnVoltar);
-        btnsair= findViewById(R.id.btnsair);
+        btnsair = findViewById(R.id.btnsair);
 
         transportadora = findViewById(R.id.txtTransportadora);
         descricao = findViewById(R.id.txtDescricao);
@@ -33,19 +34,17 @@ public class DetalhesActivity extends AppCompatActivity {
 
         Intent caminhoRecebido = getIntent();
 
-        if(caminhoRecebido != null){
-            //captura os parametros recebidos no caminho de tela
+        if (caminhoRecebido != null) {
+            // captura os parametros recebidos no caminho de tela
             Bundle parametros = caminhoRecebido.getExtras();
 
-            if(parametros != null){
-                transportadora.setText("Transportadora: "+parametros.getString("transportadora"));
-                descricao.setText("Descrição: "+parametros.getString("descricao"));
-                partida.setText("Local de Partida: "+parametros.getString("localPartida"));
-                destino.setText("Destino: "+parametros.getString("destino"));
-                saida.setText("Saida: "+parametros.getString("saida"));
-                chegada.setText("Chegada: "+parametros.getString("chegada"));
-
-
+            if (parametros != null) {
+                transportadora.setText("Transportadora: " + parametros.getString("transportadora"));
+                descricao.setText("Descrição: " + parametros.getString("descricao"));
+                partida.setText("Local de Partida: " + parametros.getString("localPartida"));
+                destino.setText("Destino: " + parametros.getString("destino"));
+                saida.setText("Saida: " + parametros.getString("saida"));
+                chegada.setText("Chegada: " + parametros.getString("chegada"));
             }
         }
 
@@ -59,9 +58,26 @@ public class DetalhesActivity extends AppCompatActivity {
         btnsair.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DetalhesActivity.this, LoginActivity.class));
+                // Chama a função de logout
+                logout();
             }
         });
+    }
 
+    private void logout() {
+        // Limpa as credenciais salvas
+        clearPasswordFromPreferences();
+
+        // Redireciona para a tela de login
+        startActivity(new Intent(DetalhesActivity.this, LoginActivity.class));
+        finish(); // Fecha a DetalhesActivity para evitar que o usuário volte para ela usando o botão "voltar"
+    }
+
+    private void clearPasswordFromPreferences() {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove("savedPassword");
+        editor.putBoolean("rememberPassword", false);
+        editor.apply();
     }
 }

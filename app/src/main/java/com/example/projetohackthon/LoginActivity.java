@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                     // Check if the "Remember Password" CheckBox is checked
                     if (checkBoxRememberPassword.isChecked()) {
                         // Save the password to SharedPreferences
-                        savePasswordToPreferences(senha);
+                        savePasswordToPreferences(email, senha);
                     } else {
                         // Clear the saved password from SharedPreferences
                         clearPasswordFromPreferences();
@@ -79,11 +79,22 @@ public class LoginActivity extends AppCompatActivity {
 
         // Load the saved state of the CheckBox
         checkBoxRememberPassword.setChecked(loadRememberPasswordState());
+
+        // Carrega a senha salva, se existir
+        String savedEmail = loadSavedEmail();
+        String savedPassword = loadSavedPassword();
+        if (!savedEmail.isEmpty()) {
+            editEmail.setText(savedEmail);
+        }
+        if (!savedPassword.isEmpty()) {
+            editSenha.setText(savedPassword);
+        }
     }
 
-    private void savePasswordToPreferences(String password) {
+    private void savePasswordToPreferences(String email, String password) {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("savedEmail", email);
         editor.putString("savedPassword", password);
         editor.putBoolean("rememberPassword", true);
         editor.apply();
@@ -92,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
     private void clearPasswordFromPreferences() {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
+        editor.remove("savedEmail");
         editor.remove("savedPassword");
         editor.putBoolean("rememberPassword", false);
         editor.apply();
@@ -100,6 +112,24 @@ public class LoginActivity extends AppCompatActivity {
     private boolean loadRememberPasswordState() {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         return preferences.getBoolean("rememberPassword", false);
+    }
+
+    private String loadSavedEmail() {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        return preferences.getString("savedEmail", "");
+    }
+
+    private String loadSavedPassword() {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        return preferences.getString("savedPassword", "");
+    }
+    private void logout() {
+        // Limpa as credenciais salvas
+        clearPasswordFromPreferences();
+
+        // Redireciona para a tela de login
+        startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+        finish(); // Fecha a LoginActivity para evitar que o usuário volte para ela usando o botão "voltar"
     }
 
     private class AutenticacaoTask extends AsyncTask<String, Void, String> {
@@ -116,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
             String senha = params[1];
 
             try {
-                URL url = new URL("http://10.0.61.140:3000/usuario?login=" + login + "&senha=" + senha);
+                URL url = new URL("http://172.23.176.1:3000/usuario?login=" + login + "&senha=" + senha);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
 
                 httpURLConnection.setRequestMethod("GET");
